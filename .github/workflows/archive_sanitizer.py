@@ -135,7 +135,7 @@ class ArchiveSanitizerApp:
 
         elif ext in (".mp4", ".mkv", ".avi", ".mov", ".wmv", ".webm", ".m4a", ".ogg", ".wav"):
             if subprocess.call(["ffmpeg", "-v", "error", "-i", filepath, "-f", "null", "-"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
-                return f"Поврежденный медиапоток ($ext)"
+                return f"Поврежденный медиапоток ({ext})"
 
         elif ext in (".zip", ".rar", ".7z"):
             if subprocess.call(["7z", "t", filepath], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
