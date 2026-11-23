@@ -104,8 +104,9 @@ class ArchiveSanitizerApp:
         except OSError as e:
             return f"Сбойный сектор / Ошибка чтения ({e.strerror})"
 
-        ext = os.path.splitext(filepath)[1].lower()
-        
+        _, raw_ext = os.path.splitext(filepath)
+        ext = raw_ext.lower()
+
         try:
             mime = subprocess.check_output(["file", "-b", "--mime-type", filepath], stderr=subprocess.DEVNULL).decode().strip()
         except Exception:
