@@ -5,6 +5,9 @@ on:
     branches: [ "main", "master" ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-rpm:
     runs-on: ubuntu-latest
@@ -39,8 +42,10 @@ jobs:
             .github/workflows/archive_sanitizer.py=/usr/bin/archive-sanitizer \
             .github/workflows/archive-sanitizer.desktop=/usr/share/applications/archive-sanitizer.desktop
 
-      - name: Выгрузка готового .rpm для скачивания
-        uses: actions/upload-artifact@v4
-        with:
-          name: archive-sanitizer-rosa-rpm
-          path: "*.rpm"
+      - name: Публикация чистого .rpm в раздел Releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v1.0.${{ github.run_number }}" *.rpm \
+            --title "Санитар Архива v1.0.${{ github.run_number }}" \
+            --notes "Готовый установочный RPM-пакет для ROSA Linux"
