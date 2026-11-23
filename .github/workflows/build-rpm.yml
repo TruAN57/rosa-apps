@@ -1,0 +1,46 @@
+name: Build RPM for ROSA Linux
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-rpm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Скачивание кода программы
+        uses: actions/checkout@v4
+
+      - name: Установка сборщика RPM (fpm)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ruby ruby-dev build-essential rpm
+          sudo gem install --no-document fpm
+
+      - name: Сборка пакета .rpm для ROSA Linux
+        run: |
+          chmod +x archive_sanitizer.py
+          fpm -s dir -t rpm \
+            -n archive-sanitizer \
+            -v 1.0.${{ github.run_number }} \
+            --architecture x86_64 \
+            --description "Санитар Архива — антивирусная проверка целостности медиафайлов и поиск сбойных секторов" \
+            -d python3 \
+            -d python3-tkinter \
+            -d ffmpeg \
+            -d jpeginfo \
+            -d mp3val \
+            -d flac \
+            -d imagemagick \
+            -d poppler \
+            -d p7zip \
+            -d file \
+            archive_sanitizer.py=/usr/bin/archive-sanitizer \
+            archive-sanitizer.desktop=/usr/share/applications/archive-sanitizer.desktop
+
+      - name: Выгрузка готового .rpm для скачивания
+        uses: actions/upload-artifact@v4
+        with:
+          name: archive-sanitizer-rosa-rpm
+          path: "*.rpm"
