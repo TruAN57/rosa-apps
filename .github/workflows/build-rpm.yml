@@ -1,4 +1,4 @@
-name: Build RPM for ROSA Linux
+name: Build RPM (32 & 64 bit) for ROSA Linux
 
 on:
   push:
@@ -21,31 +21,33 @@ jobs:
           sudo apt-get install -y ruby ruby-dev build-essential rpm
           sudo gem install --no-document fpm
 
-      - name: Сборка пакета .rpm для ROSA Linux
+      - name: Сборка двух .rpm (32-бит i586 и 64-бит x86_64) для ROSA
         run: |
           chmod +x .github/workflows/archive_sanitizer.py
-          fpm -s dir -t rpm \
-            -n archive-sanitizer \
-            -v 1.0.${{ github.run_number }} \
-            -a x86_64 \
-            --description "Санитар Архива — проверка целостности медиафайлов и поиск сбойных секторов" \
-            -d python3 \
-            -d python3-tkinter \
-            -d ffmpeg \
-            -d jpeginfo \
-            -d mp3val \
-            -d flac \
-            -d imagemagick \
-            -d poppler \
-            -d p7zip \
-            -d file \
-            .github/workflows/archive_sanitizer.py=/usr/bin/archive-sanitizer \
-            .github/workflows/archive-sanitizer.desktop=/usr/share/applications/archive-sanitizer.desktop
+          for ARCH in i586 x86_64; do
+            fpm -s dir -t rpm \
+              -n archive-sanitizer \
+              -v 1.0.${{ github.run_number }} \
+              -a $ARCH \
+              --description "Санитар Архива — проверка целостности медиафайлов и поиск сбойных секторов" \
+              -d python3 \
+              -d python3-tkinter \
+              -d ffmpeg \
+              -d jpeginfo \
+              -d mp3val \
+              -d flac \
+              -d imagemagick \
+              -d poppler \
+              -d p7zip \
+              -d file \
+              .github/workflows/archive_sanitizer.py=/usr/bin/archive-sanitizer \
+              .github/workflows/archive-sanitizer.desktop=/usr/share/applications/archive-sanitizer.desktop
+          done
 
-      - name: Публикация чистого .rpm в раздел Releases
+      - name: Публикация обоих .rpm в раздел Releases
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "v1.0.${{ github.run_number }}" *.rpm \
             --title "Санитар Архива v1.0.${{ github.run_number }}" \
-            --notes "Готовый установочный RPM-пакет для ROSA Linux"
+            --notes "Готовые RPM-пакеты для ROSA Linux (32-бит i586 и 64-бит x86_64)"
