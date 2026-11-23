@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Санитар Архива
+Comment=Проверка целостности медиафайлов и поиск сбойных секторов
+Exec=/usr/bin/archive-sanitizer
+Icon=drive-harddisk
+Terminal=false
+Type=Application
+Categories=Utility;System;
