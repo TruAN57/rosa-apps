@@ -18,14 +18,25 @@ jobs:
           sudo apt-get install -y ruby ruby-dev build-essential rpm
           sudo gem install --no-document fpm
 
-      - name: Сборка пакета .rpm для ROSA Linux
+      - name: Создание ярлыка и сборка .rpm для ROSA
         run: |
           chmod +x archive_sanitizer.py
+          cat << 'EOF' > archive-sanitizer.desktop
+          [Desktop Entry]
+          Name=Санитар Архива
+          Comment=Проверка целостности медиафайлов и поиск сбойных секторов
+          Exec=/usr/bin/archive-sanitizer
+          Icon=drive-harddisk
+          Terminal=false
+          Type=Application
+          Categories=Utility;System;
+          EOF
+
           fpm -s dir -t rpm \
             -n archive-sanitizer \
             -v 1.0.${{ github.run_number }} \
-            --architecture x86_64 \
-            --description "Санитар Архива — антивирусная проверка целостности медиафайлов и поиск сбойных секторов" \
+            -a x86_64 \
+            --description "Санитар Архива — проверка целостности медиафайлов и поиск сбойных секторов" \
             -d python3 \
             -d python3-tkinter \
             -d ffmpeg \
