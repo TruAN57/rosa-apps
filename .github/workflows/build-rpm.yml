@@ -18,20 +18,9 @@ jobs:
           sudo apt-get install -y ruby ruby-dev build-essential rpm
           sudo gem install --no-document fpm
 
-      - name: Создание ярлыка и сборка .rpm для ROSA
+      - name: Сборка пакета .rpm для ROSA Linux
         run: |
-          chmod +x archive_sanitizer.py
-          cat << 'EOF' > archive-sanitizer.desktop
-          [Desktop Entry]
-          Name=Санитар Архива
-          Comment=Проверка целостности медиафайлов и поиск сбойных секторов
-          Exec=/usr/bin/archive-sanitizer
-          Icon=drive-harddisk
-          Terminal=false
-          Type=Application
-          Categories=Utility;System;
-          EOF
-
+          chmod +x .github/workflows/archive_sanitizer.py
           fpm -s dir -t rpm \
             -n archive-sanitizer \
             -v 1.0.${{ github.run_number }} \
@@ -47,8 +36,8 @@ jobs:
             -d poppler \
             -d p7zip \
             -d file \
-            archive_sanitizer.py=/usr/bin/archive-sanitizer \
-            archive-sanitizer.desktop=/usr/share/applications/archive-sanitizer.desktop
+            .github/workflows/archive_sanitizer.py=/usr/bin/archive-sanitizer \
+            .github/workflows/archive-sanitizer.desktop=/usr/share/applications/archive-sanitizer.desktop
 
       - name: Выгрузка готового .rpm для скачивания
         uses: actions/upload-artifact@v4
